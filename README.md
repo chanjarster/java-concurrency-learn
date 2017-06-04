@@ -46,7 +46,7 @@ public class NoHappensBefore {
 }
 ```
 
-在上面这个例子里，``t1``有可能永远都不结束，因为``main thread``对``stop``变量的变化``t1``invisible。
+在上面这个例子里，``t1``有可能永远都不结束，因为``main thread``对``stop``变量修改对于``t1`` invisible。
 
 
 ### synchronized 保证 happens-before

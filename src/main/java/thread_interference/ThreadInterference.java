@@ -4,15 +4,15 @@ package thread_interference;
  * https://docs.oracle.com/javase/tutorial/essential/concurrency/interfere.html
  * Created by qianjia on 2017/6/3.
  */
-public class ThreadInterferenceExample {
+public class ThreadInterference {
 
   public static void main(String[] args) throws InterruptedException {
 
-    threadNotSafe();
-    threadSafe();
+    interference();
+    noInterference();
   }
 
-  private static void threadNotSafe() throws InterruptedException {
+  private static void interference() throws InterruptedException {
 
     int steps = 1000;
     Counter counter = new SimpleCounter();
@@ -23,11 +23,11 @@ public class ThreadInterferenceExample {
 
     t1.join();
     t2.join();
-    System.out.println("Thread not safe result: " + counter.value());
+    System.out.println("Interference result: " + counter.value());
 
   }
 
-  private static void threadSafe() throws InterruptedException {
+  private static void noInterference() throws InterruptedException {
     int steps = 1000;
     Counter counter = new SynchronizedCounter();
     Thread t1 = new Thread(new CounterDecrementor(counter, steps));
@@ -37,6 +37,6 @@ public class ThreadInterferenceExample {
 
     t1.join();
     t2.join();
-    System.out.println("Thread safe result: " + counter.value());
+    System.out.println("No interference result: " + counter.value());
   }
 }

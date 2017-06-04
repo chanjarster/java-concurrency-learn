@@ -6,6 +6,11 @@ java concurrency program learn
  
 ## Thread Interference
 
+根据[Java官方教程-Thread interference][official-tutorial-thread-interference]的例子，``Counter#c``的结果很有可能不是0。这里提供[ThreadInterference.java][ThreadInterference]来重现这种情况。
+
+* ``interference``方法使用了[SimpleCounter][SimpleCounter]，也就是没有采用任何并发工具的Counter，其执行完毕后的结果很有可能不是0。
+* ``noInterference``方法使用了[SynchronizedCounter][SynchronizedCounter]，它执行完毕后的结果肯定是0。
+
 ## happens-before
 
 *happens-before*是保证[Memory Visibility][MemoryVisibility]的前提，根据[javadoc][MemoryVisibility]的说明：
@@ -242,10 +247,13 @@ public class ConcurrentCollectionHappensBefore {
 [6]: https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledExecutorService.html
 [7]: https://docs.oracle.com/javase/tutorial/essential/concurrency/index.html
 [8]: https://docs.oracle.com/javase/specs/jls/se7/html/jls-17.html#jls-17.4.5
-[ThreadInterferenceExample]: src/main/java/thread_interference/ThreadInterferenceExample.java
+[official-tutorial-thread-interference]: https://docs.oracle.com/javase/tutorial/essential/concurrency/interfere.html
+[ThreadInterference]: src/main/java/thread_interference/ThreadInterference.java
 [MemoryVisibility]: https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/package-summary.html#MemoryVisibility
 [NoHappensBefore]: src/main/java/happens_before/NoHappensBefore.java
 [VolatileHappensBefore]: src/main/java/happens_before/VolatileHappensBefore.java
 [ConcurrentCollectionHappensBefore]: src/main/java/happen_before/ConcurrentCollectionHappensBefore.java
 [SynchronizedBlockHappensBefore]: src/main/java/happen_before/SynchronizedBlockHappensBefore.java
 [SynchronizedMethodHappensBefore]: src/main/java/happen_before/SynchronizedMethodHappensBefore
+[SimpleCounter]: src/main/java/thread_interference/SimpleCounter.java
+[SynchronizedCounter]: src/main/java/thread_interference/SynchronizedCounter.java

@@ -1,9 +1,5 @@
 package thread_interference;
 
-/**
- * https://docs.oracle.com/javase/tutorial/essential/concurrency/interfere.html
- * Created by qianjia on 2017/6/3.
- */
 public class ThreadInterference {
 
   public static void main(String[] args) throws InterruptedException {

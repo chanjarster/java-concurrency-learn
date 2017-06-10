@@ -3,7 +3,7 @@ package happens_before;
 import java.util.concurrent.Exchanger;
 import java.util.concurrent.TimeUnit;
 
-public class ExchangeHappensBefore {
+public class ExchangerHappensBefore {
 
   private static boolean stop = false;
 

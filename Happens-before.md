@@ -466,7 +466,7 @@ public class LockReleaseHappensBefore {
 
 > For each pair of threads that successfully exchange objects via an `Exchanger`, actions prior to the `exchange()` in each thread *happen-before* those subsequent to the corresponding `exchange()` in another thread.
 
-见[ExchangeHappensBefore.java][ExchangeHappensBefore]的代码：
+见[ExchangerHappensBefore.java][ExchangerHappensBefore]的代码：
 
 注意``t1First``里面，`t1`先进入``Exchanger.exchange``，`main thread`后进入``Exchange.exchange``：
 
@@ -547,7 +547,77 @@ public class LockReleaseHappensBefore {
 
 > Actions prior to calling `CyclicBarrier.await` and `Phaser.awaitAdvance` (as well as its variants) *happen-before* actions performed by the barrier action, and actions performed by the barrier action *happen-before* actions subsequent to a successful return from the corresponding `await` in other threads.
 
-TODO
+也就是说：
+
+1. `CyclicBarrier.await`之前的action *happens-before* barrier action
+2. barrier action *happens-before* `CyclicBarrier.await`之后的action
+
+见[CyclicBarrierHappensBefore.java][CyclicBarrierHappensBefore]的代码：
+
+先看一段第1点对应的代码：
+
+```java
+private static void actionBeforeAwaitHappensBeforeBarrierAction() throws BrokenBarrierException, InterruptedException {
+
+  CyclicBarrier barrier = new CyclicBarrier(1, () -> {
+    while (!stop) {
+    }
+    System.out.println(Thread.currentThread().getName() + " finished");
+  });
+
+  Thread t1 = new Thread(() -> {
+
+    try {
+      TimeUnit.SECONDS.sleep(2L);
+      stop = true;
+      System.out.println(Thread.currentThread().getName() + " await barrier");
+      barrier.await();
+    } catch (InterruptedException e) {
+      return;
+    } catch (BrokenBarrierException e) {
+      return;
+    }
+
+  }, "t1");
+
+  t1.start();
+
+}
+```
+
+从上面的代码可以看到，在`t1 thread`里我们在它`await`之前``stop = true``，然后在`barrier action`里读取``stop``变量。此时``stop``变量对于`barrier action`是可见的。
+
+和第2点对应的代码：
+
+```java
+private static void barrierActionHappensBeforeActionAfterAwait() throws InterruptedException, BrokenBarrierException {
+
+  CyclicBarrier barrier = new CyclicBarrier(1, () -> stop = true);
+
+  Thread t1 = new Thread(() -> {
+
+    String threadName = Thread.currentThread().getName();
+
+    try {
+      System.out.println(threadName + " await barrier");
+      while (!stop) {
+        barrier.await();
+      }
+
+    } catch (InterruptedException e) {
+      return;
+    } catch (BrokenBarrierException e) {
+      return;
+    }
+    System.out.println(Thread.currentThread().getName() + " finished");
+  }, "t1");
+
+  t1.start();
+
+}
+```
+
+在上面的代码里，`barrier action`对``stop = true``，然后在`t1 thread`里`await`，此时``stop``变量对于`t1 thread`是可见的。
 
 ## 陷阱
 
@@ -607,4 +677,5 @@ public class VolatileCounter implements Counter {
 [ExecutorSubmissionHappensBefore]: src/main/java/happen_before/ExecutorSubmissionHappensBefore.java
 [FutureHappensBefore]: src/main/java/happen_before/FutureHappensBefore.java
 [LockReleaseHappensBefore]: src/main/java/happen_before/LockReleaseHappensBefore.java
-[ExchangeHappensBefore]: src/main/java/happen_before/ExchangeHappensBefore.java
+[ExchangerHappensBefore]: src/main/java/happen_before/ExchangerHappensBefore.java
+[CyclicBarrierHappensBefore]: src/main/java/happen_before/CyclicBarrierHappensBefore.java
